@@ -32,7 +32,7 @@ int delete_dnodeint_at_index(dlistint_t **head, unsigned int index)
         return (-1);
     }
 
-    // If the node to delete is the head node
+    /* If the node to delete is the head node */
     if (0 == index)
     {
         tmp = (*head)->next;
@@ -45,22 +45,22 @@ int delete_dnodeint_at_index(dlistint_t **head, unsigned int index)
     }
     else
     {
-        // Fix the previous node's next pointer to the current node's next
+        /* Fix the previous node's next pointer to the current node's next */
         if ((*head)->prev != NULL)
         {
             (*head)->prev->next = (*head)->next;
         }
-        
-        // Fix the next node's prev pointer to the current node's prev
+
+        /* Fix the next node's prev pointer to the current node's prev */
         if ((*head)->next != NULL)
         {
             (*head)->next->prev = (*head)->prev;
         }
 
-        tmp = (*head)->next;  // Store the next node
-        free(*head);           // Free the current node
-        *head = saved_head;    // Restore the head pointer
-        *head = tmp;           // Move to the next node (if it exists)
+        tmp = (*head)->next;  /* Store the next node */
+        free(*head);           /* Free the current node */
+        *head = saved_head;    /* Restore the head pointer */
+        *head = tmp;           /* Move to the next node (if it exists) */
     }
 
     return (1);
