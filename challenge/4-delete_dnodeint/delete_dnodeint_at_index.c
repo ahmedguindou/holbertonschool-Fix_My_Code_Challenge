@@ -10,38 +10,58 @@
  */
 int delete_dnodeint_at_index(dlistint_t **head, unsigned int index)
 {
-	dlistint_t *current = *head;
-	unsigned int i = 0;
+    dlistint_t *saved_head;
+    dlistint_t *tmp;
+    unsigned int p;
 
-	if (*head == NULL)
-		return (-1);
+    if (*head == NULL)
+    {
+        return (-1);
+    }
 
-	/* If deleting the head node */
-	if (index == 0)
-	{
-		*head = current->next;
-		if (*head)
-			(*head)->prev = NULL;
-		free(current);
-		return (1);
-	}
+    saved_head = *head;
+    p = 0;
+    while (p < index && *head != NULL)
+    {
+        *head = (*head)->next;
+        p++;
+    }
+    if (p != index)
+    {
+        *head = saved_head;
+        return (-1);
+    }
 
-	/* Traverse to the node at index */
-	while (current && i < index)
-	{
-		current = current->next;
-		i++;
-	}
+    // If the node to delete is the head node
+    if (0 == index)
+    {
+        tmp = (*head)->next;
+        free(*head);
+        *head = tmp;
+        if (tmp != NULL)
+        {
+            tmp->prev = NULL;
+        }
+    }
+    else
+    {
+        // Fix the previous node's next pointer to the current node's next
+        if ((*head)->prev != NULL)
+        {
+            (*head)->prev->next = (*head)->next;
+        }
+        
+        // Fix the next node's prev pointer to the current node's prev
+        if ((*head)->next != NULL)
+        {
+            (*head)->next->prev = (*head)->prev;
+        }
 
-	if (!current)
-		return (-1);
+        tmp = (*head)->next;  // Store the next node
+        free(*head);           // Free the current node
+        *head = saved_head;    // Restore the head pointer
+        *head = tmp;           // Move to the next node (if it exists)
+    }
 
-	/* Re-link previous and next nodes */
-	if (current->prev)
-		current->prev->next = current->next;
-	if (current->next)
-		current->next->prev = current->prev;
-
-	free(current);
-	return (1);
+    return (1);
 }
