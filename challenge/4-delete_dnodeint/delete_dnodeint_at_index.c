@@ -2,63 +2,66 @@
 #include <stdlib.h>
 
 /**
- * delete_dnodeint_at_index - Delete a node at a specific index from a list
+ * delete_dnodeint_at_index - Deletes the node at a given index in a dlistint_t list
+ * @head: Double pointer to the head of the list
+ * @index: Index of the node to delete
  *
- * @head: A pointer to the first element of a list
- * @index: The index of the node to delete
- *
- * Return: 1 on success, -1 on failure
+ * Return: 1 if it succeeded, -1 if it failed
  */
 int delete_dnodeint_at_index(dlistint_t **head, unsigned int index)
 {
-    dlistint_t *current;
-    unsigned int i;
+    dlistint_t *saved_head;
+    dlistint_t *tmp;
+    unsigned int p;
 
     if (*head == NULL)
     {
         return (-1);
     }
 
-    current = *head;
-
-    /* Traverse the list to the node at the specified index */
-    for (i = 0; current != NULL && i < index; i++)
+    saved_head = *head;
+    p = 0;
+    while (p < index && *head != NULL)
     {
-        current = current->next;
+        *head = (*head)->next;
+        p++;
     }
-
-    /* If the index is out of bounds, return -1 */
-    if (current == NULL)
+    if (p != index)
     {
+        *head = saved_head;
         return (-1);
     }
 
     /* If the node to delete is the head node */
-    if (current == *head)
+    if (0 == index)
     {
-        *head = current->next;
-        if (*head != NULL) /* Update prev of the new head, if exists */
+        tmp = (*head)->next;
+        free(*head);
+        *head = tmp;
+        if (tmp != NULL)
         {
-            (*head)->prev = NULL;
+            tmp->prev = NULL;
         }
     }
     else
     {
-        /* Fix the previous node's next pointer */
-        if (current->prev != NULL)
+        /* Fix the previous node's next pointer to the current node's next */
+        if ((*head)->prev != NULL)
         {
-            current->prev->next = current->next;
+            (*head)->prev->next = (*head)->next;
         }
 
-        /* Fix the next node's prev pointer */
-        if (current->next != NULL)
+        /* Fix the next node's prev pointer to the current node's prev */
+        if ((*head)->next != NULL)
         {
-            current->next->prev = current->prev;
+            (*head)->next->prev = (*head)->prev;
         }
+
+        tmp = (*head)->next;  /* Store the next node */
+        free(*head);           /* Free the current node */
+        *head = saved_head;    /* Restore the head pointer */
+        *head = tmp;           /* Move to the next node (if it exists) */
     }
-
-    /* Free the memory of the node */
-    free(current);
 
     return (1);
 }
